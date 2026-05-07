@@ -174,7 +174,7 @@ const CommentItem: React.FC<{
            {comment.userId === user?.uid && (
             <button 
               onClick={() => onDelete(comment.id)}
-              className="ml-auto opacity-0 group-hover:opacity-100 p-1.5 text-white/20 hover:text-red-500 transition-all font-black text-[10px] uppercase tracking-widest italic flex items-center gap-2"
+              className="ml-auto p-1.5 text-white/20 hover:text-red-500 transition-all font-black text-[10px] uppercase tracking-widest italic flex items-center gap-2"
             >
               Delete
             </button>

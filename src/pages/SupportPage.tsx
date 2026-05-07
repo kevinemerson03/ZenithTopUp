@@ -144,6 +144,20 @@ export const SupportPage: React.FC = () => {
     }
   };
 
+  const handleDeleteMessage = async (messageId: string) => {
+    if (!user) return;
+    const chatUserId = isAdmin ? selectedUser?.userId : user.uid;
+    if (!chatUserId) return;
+
+    const messagePath = `support_chats/${chatUserId}/messages/${messageId}`;
+    try {
+      await deleteDoc(doc(db, 'support_chats', chatUserId, 'messages', messageId));
+      toast.success('Transmission redacted');
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, messagePath);
+    }
+  };
+
   const formatTime = (ts: any) => {
     if (!ts) return '';
     const date = ts.toDate ? ts.toDate() : new Date(ts);
@@ -303,12 +317,23 @@ export const SupportPage: React.FC = () => {
                                 {formatTime(msg.timestamp)}
                               </span>
                             </div>
-                            <div className={`px-6 py-4 rounded-3xl text-sm font-medium leading-relaxed ${
+                            <div className={`px-6 py-4 rounded-3xl text-sm font-medium leading-relaxed group relative ${
                               isOwn 
                                 ? 'bg-brand text-white rounded-tr-none shadow-lg shadow-brand/10' 
                                 : 'bg-white/5 text-slate-300 rounded-tl-none border border-white/5'
                             }`}>
                               {msg.text}
+                              {(msg.senderId === user.uid || isAdmin) && (
+                                <button 
+                                  onClick={() => handleDeleteMessage(msg.id)}
+                                  className={`absolute top-1/2 -translate-y-1/2 p-2 rounded-full bg-slate-900 border border-white/10 text-white/40 hover:text-red-500 transition-all ${
+                                    isOwn ? '-left-12' : '-right-12'
+                                  }`}
+                                  title="Delete message"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              )}
                             </div>
                           </div>
                         </motion.div>
