@@ -1,0 +1,115 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Stored user information after registration",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "name", "email"]
+    },
+    "Cart": {
+      "title": "User Cart",
+      "description": "Current active shopping cart for a user",
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "productId": { "type": "string" },
+              "name": { "type": "string" },
+              "price": { "type": "number" },
+              "quantity": { "type": "number" },
+              "image": { "type": "string" }
+            }
+          }
+        },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Transaction": {
+      "title": "Purchase History",
+      "description": "Past successful or pending transactions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "gameId": { "type": "string" },
+        "gameName": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "completed", "failed"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "paymentMethod": { "type": "string" },
+        "playerId": { "type": "string" }
+      },
+      "required": ["userId", "amount", "status", "createdAt"]
+    },
+    "Suggestion": {
+      "title": "Game Suggestion",
+      "description": "Community game suggestions and comments",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "content": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "likesCount": { "type": "number" }
+      },
+      "required": ["userId", "userName", "content", "timestamp"]
+    },
+    "SupportMessage": {
+      "title": "Support Message",
+      "description": "A private message between a user and support",
+      "type": "object",
+      "properties": {
+        "senderId": { "type": "string" },
+        "text": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "isAdmin": { "type": "boolean" }
+      },
+      "required": ["senderId", "text", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile document"
+    },
+    "/users/{userId}/cart/data": {
+      "schema": "Cart",
+      "description": "User's current cart"
+    },
+    "/users/{userId}/history/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Individual transaction record"
+    },
+    "/suggestions/{suggestionId}": {
+      "schema": "Suggestion",
+      "description": "Global collection for game suggestions and comments"
+    },
+    "/suggestions/{suggestionId}/likes/{userId}": {
+      "schema": "object",
+      "description": "User like record"
+    },
+    "/suggestions/{suggestionId}/replies/{replyId}": {
+      "schema": "Suggestion",
+      "description": "Replies to a specific suggestion"
+    },
+    "/support_chats/{userId}": {
+      "schema": "object",
+      "description": "Support chat root for a specific user"
+    },
+    "/support_chats/{userId}/messages/{messageId}": {
+      "schema": "SupportMessage",
+      "description": "Messages in a support chat"
+    }
+  }
+}

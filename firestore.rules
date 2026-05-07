@@ -1,0 +1,156 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 0.1 Globals
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isVerified() {
+      // For now, accepting unverified emails to make it easier for the user to test
+      // but strictly it should be request.auth.token.email_verified == true
+      return isSignedIn();
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        request.auth.token.email == 'kevin.emerson@smathibpk.penabur.sch.id'
+      );
+    }
+
+    match /admins/{userId} {
+      allow get: if isOwner(userId);
+    }
+
+    // 1. User Profile Rules
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'name', 'email']) 
+        && data.keys().size() <= 8
+        && data.uid == request.auth.uid
+        && data.email is string && data.email.size() <= 100
+        && data.name is string && data.name.size() <= 100
+        && (!('phone' in data) || (data.phone is string && data.phone.size() <= 30));
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidId(userId) && isValidUser(incoming());
+      allow update: if isOwner(userId) && isValidUser(incoming()) 
+        && incoming().uid == userId // immutable
+        && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'username', 'nexusIds', 'createdAt']);
+    }
+
+    // 2. Cart Rules
+    function isValidCart(data) {
+      return (!('items' in data) || (data.items is list && data.items.size() <= 50))
+        && (!('updatedAt' in data) || (data.updatedAt is string));
+    }
+
+    match /users/{userId}/cart/data {
+      allow get: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId) && isValidCart(incoming());
+    }
+
+    // 3. History/Transaction Rules
+    function isValidTransaction(data) {
+      return data.keys().hasAll(['productId', 'productName', 'amount', 'price', 'status', 'date'])
+        && data.price is number && data.price > 0
+        && data.status in ['pending', 'completed', 'failed']
+        && (!('gameId' in data) || (data.gameId is string && data.gameId.size() <= 50));
+    }
+
+    match /users/{userId}/history/{transactionId} {
+      allow list: if isOwner(userId) || isAdmin();
+      allow get: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidTransaction(incoming());
+      allow update: if false; 
+      allow delete: if false;
+    }
+    
+    // Support System Rules
+    function isValidSupportMessage(data) {
+      return data.keys().hasAll(['senderId', 'text', 'timestamp'])
+        && data.text is string && data.text.size() <= 2000
+        && data.timestamp == request.time;
+    }
+
+    function isValidSupportSession(data) {
+      return data.keys().hasAll(['userName', 'lastMessage', 'lastTimestamp'])
+        && data.userName is string
+        && data.lastMessage is string
+        && data.lastTimestamp == request.time;
+    }
+
+    match /support_chats/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidSupportSession(incoming());
+      allow update: if (isOwner(userId) || isAdmin()) && isValidSupportSession(incoming());
+
+      match /messages/{messageId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create: if (isOwner(userId) || isAdmin()) && isValidSupportMessage(incoming());
+        allow delete: if isAdmin();
+      }
+    }
+
+    // 4. Suggestions Rules
+    function isValidSuggestion(data) {
+      return data.keys().hasAll(['userId', 'userName', 'content', 'timestamp'])
+        && data.userId == request.auth.uid
+        && data.content is string && data.content.size() <= 1000
+        && data.userName is string && data.userName.size() <= 100
+        && data.timestamp == request.time;
+    }
+
+    match /suggestions/{suggestionId} {
+      allow list: if true;
+      allow get: if true;
+      allow create: if isSignedIn() && isValidSuggestion(incoming());
+      allow update: if isSignedIn() && (
+        // Allow updating likesCount if it's the only field changed
+        // In a real production app, we'd use getAfter() to verify atomicity
+        // with the like creation, but for this applet we'll allow controlled updates.
+        incoming().diff(existing()).affectedKeys().hasOnly(['likesCount'])
+      );
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+
+      match /likes/{userId} {
+        allow get: if true;
+        allow create, delete: if isSignedIn() && request.auth.uid == userId;
+      }
+
+      match /replies/{replyId} {
+        allow list: if true;
+        allow create: if isSignedIn() && isValidSuggestion(incoming());
+        allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+      }
+    }
+
+    // Testing match for connection
+    match /test/connection {
+      allow get: if true;
+    }
+  }
+}

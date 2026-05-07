@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-brand: #2563EB;
+  --color-brand-secondary: #7C3AED;
+  --color-bg-main: #020617;
+  --color-bg-card: #0F172A;
+  --color-border-subtle: rgba(255, 255, 255, 0.05);
+}
+
+html {
+  background-color: #020617;
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply font-sans bg-bg-main text-slate-200 antialiased;
+}
+
+.glass-card {
+  @apply bg-slate-900/50 backdrop-blur-xl border border-white/5 rounded-3xl;
+}
+
+.step-number {
+  @apply w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-brand/20;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0F172A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
