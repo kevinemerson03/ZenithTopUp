@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight, ShieldCheck, Zap, Info, CheckCircle2, CreditCard, Wallet, Landmark, QrCode, ArrowLeft } from 'lucide-react';
 import { GAMES, SUBSCRIPTIONS } from '../constants';
 import { Product, Transaction, CartItem } from '../types';
+import { PAYMENT_METHODS } from '../constants/paymentMethods';
 import { store } from '../lib/store';
 import { useCart } from '../contexts/CartContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -307,19 +308,16 @@ export const TopUpPage: React.FC = () => {
                 <div className="flex items-center gap-4 mb-10">
                   <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white font-black italic text-lg">03</div>
                   <div>
-                    <h2 className="text-2xl font-black italic uppercase tracking-tighter">{t('topup.payment_method')}</h2>
+                    <h2 className="text-2xl font-black italic uppercase tracking-tighter">
+                      {t('topup.payment_method')} 
+                      <span className="text-[10px] text-brand/50 ml-3 opacity-60">Optional for Cart</span>
+                    </h2>
                     <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{t('topup.gateway_desc')}</p>
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-4">
-                  {[
-                    { id: 'qris', name: 'QRIS', icon: <QrCode size={20} />, type: 'All E-Wallets & Banks' },
-                    { id: 'gopay', name: 'GoPay', icon: <Wallet size={20} />, type: 'E-Wallet' },
-                    { id: 'ovo', name: 'OVO', icon: <Wallet size={20} />, type: 'E-Wallet' },
-                    { id: 'shopeepay', name: 'ShopeePay', icon: <Wallet size={20} />, type: 'E-Wallet' },
-                    { id: 'va', name: 'Virtual Account', icon: <Landmark size={20} />, type: 'BCA, Mandiri, BNI' },
-                  ].map((pm) => (
+                  {PAYMENT_METHODS.map((pm) => (
                     <button 
                       key={pm.id}
                       onClick={() => setSelectedPayment(pm.id)}
@@ -364,17 +362,14 @@ export const TopUpPage: React.FC = () => {
               >
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white font-black italic text-sm">03</div>
-                  <h2 className="text-lg font-black italic uppercase tracking-tighter">{t('topup.payment_method')}</h2>
+                  <h2 className="text-lg font-black italic uppercase tracking-tighter">
+                    {t('topup.payment_method')}
+                    <span className="text-[9px] text-brand/50 ml-2 opacity-60 lowercase">optional for cart</span>
+                  </h2>
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  {[
-                    { id: 'qris', name: 'QRIS', icon: <QrCode size={16} /> },
-                    { id: 'gopay', name: 'GoPay', icon: <Wallet size={16} /> },
-                    { id: 'ovo', name: 'OVO', icon: <Wallet size={16} /> },
-                    { id: 'shopeepay', name: 'ShopeePay', icon: <Wallet size={16} /> },
-                    { id: 'va', name: 'Bank Transfer', icon: <Landmark size={16} /> },
-                  ].map((pm) => (
+                  {PAYMENT_METHODS.map((pm) => (
                     <button 
                       key={pm.id}
                       onClick={() => setSelectedPayment(pm.id)}
@@ -424,6 +419,15 @@ export const TopUpPage: React.FC = () => {
                     </p>
                     <p className="text-xs font-mono text-white/60">{userId || '-'}</p>
                   </div>
+
+                  {selectedPayment && (
+                    <div className="flex justify-between items-center">
+                      <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest">{t('topup.payment_method')}</p>
+                      <p className="text-xs font-black italic uppercase tracking-tighter text-brand">
+                        {PAYMENT_METHODS.find(pm => pm.id === selectedPayment)?.name || selectedPayment}
+                      </p>
+                    </div>
+                  )}
 
                   <div className="pt-4 border-t border-white/5">
                     <div className="flex justify-between items-end mb-6">
@@ -482,29 +486,42 @@ export const TopUpPage: React.FC = () => {
                   {selectedDenomData ? formatCurrency(selectedDenomData.price) : 'Rp 0'}
                 </p>
               </div>
-              <div className="flex items-center gap-4 w-full sm:w-auto">
-                <div className="flex-grow sm:flex-grow-0 text-right sm:text-left mr-4">
-                  <p className="text-xs font-bold uppercase tracking-tighter italic">{selectedDenomData?.amount}</p>
-                  <p className="text-[10px] text-white/40 uppercase tracking-widest">via {selectedPayment || '...'}</p>
+                <div className="flex items-center gap-4 w-full sm:w-auto">
+                  <div className="flex-grow sm:flex-grow-0 text-right sm:text-left mr-4">
+                    <p className="text-xs font-bold uppercase tracking-tighter italic">{selectedDenomData?.amount}</p>
+                    {selectedPayment && (
+                      <p className="text-[10px] text-white/40 uppercase tracking-widest">
+                        via {PAYMENT_METHODS.find(pm => pm.id === selectedPayment)?.name || selectedPayment}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={handleAddToCart}
+                      className="p-4 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all flex-shrink-0"
+                      title={t('topup.add_to_cart')}
+                    >
+                      <CreditCard size={18} />
+                    </button>
+                    <button 
+                      onClick={handleCheckout}
+                      disabled={isProcessing}
+                      className="flex-grow sm:flex-grow-0 bg-gradient-to-r from-brand to-brand-secondary hover:opacity-90 disabled:opacity-50 text-white px-10 py-4 rounded-full font-black text-sm uppercase tracking-widest transition-all shadow-2xl shadow-brand/20 flex items-center justify-center gap-3"
+                    >
+                      {isProcessing ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <span>{t('topup.processing')}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>{t('topup.checkout_now')}</span>
+                          <ChevronRight size={18} />
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
-                <button 
-                  onClick={handleCheckout}
-                  disabled={isProcessing}
-                  className="flex-grow sm:flex-grow-0 bg-gradient-to-r from-brand to-brand-secondary hover:opacity-90 disabled:opacity-50 text-white px-12 py-4 rounded-full font-black text-sm uppercase tracking-widest transition-all shadow-2xl shadow-brand/20 flex items-center justify-center gap-3"
-                >
-                  {isProcessing ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>{t('topup.processing')}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>{t('topup.checkout_now')}</span>
-                      <ChevronRight size={18} />
-                    </>
-                  )}
-                </button>
-              </div>
             </div>
           </motion.div>
         )}

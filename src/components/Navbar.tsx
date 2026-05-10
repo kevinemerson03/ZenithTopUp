@@ -129,30 +129,6 @@ export const Navbar: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-4 lg:gap-8">
-          <div className="hidden xl:flex items-center bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-3 gap-4 w-96 focus-within:border-brand/50 focus-within:bg-white/[0.05] transition-all group relative">
-            <Search size={18} className="text-slate-500 group-focus-within:text-brand transition-colors" />
-            <input 
-              type="text" 
-              placeholder={t('nav.search')}
-              value={searchQuery}
-              onChange={handleSearch}
-              className="bg-transparent border-none outline-none text-xs text-white placeholder:text-slate-600 w-full font-medium"
-            />
-            {searchQuery && (
-              <button 
-                onClick={() => {
-                  setSearchQuery('');
-                  const params = new URLSearchParams(location.search);
-                  params.delete('q');
-                  navigate(`/?${params.toString()}`, { replace: true });
-                }}
-                className="text-slate-500 hover:text-white transition-colors"
-              >
-                <X size={14} />
-              </button>
-            )}
-          </div>
-
           <div className="flex items-center gap-2 lg:gap-4">
             <div className="relative">
               <button 
@@ -315,7 +291,7 @@ export const Navbar: React.FC = () => {
           animate={{ scale: 1, y: 0 }}
           exit={{ scale: 0, y: 20 }}
           onClick={() => navigate('/cart')}
-          className="fixed bottom-8 right-8 z-[100] w-16 h-16 rounded-full bg-brand text-white shadow-2xl shadow-brand/40 flex items-center justify-center group active:scale-90 transition-transform"
+          className="fixed bottom-8 left-8 z-[100] w-16 h-16 rounded-full bg-brand text-white shadow-2xl shadow-brand/40 flex items-center justify-center group active:scale-90 transition-transform"
         >
           <div className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center text-[11px] font-black text-brand border-2 border-brand">
             {cart.length}

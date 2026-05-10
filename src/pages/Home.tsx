@@ -87,32 +87,6 @@ export const Home: React.FC = () => {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 -mt-12 relative z-30 pb-24">
-        {/* Search Bar */}
-        <div className="glass-card p-4 mb-12 flex items-center gap-4">
-          <div className="flex-grow flex items-center bg-slate-950/50 border border-white/5 rounded-2xl px-4 py-3 gap-3 w-full focus-within:border-brand/50 transition-all relative">
-            <Search size={20} className="text-slate-500" />
-            <input 
-              type="text" 
-              placeholder={t('home.search_placeholder')}
-              value={searchQuery}
-              onChange={handleSearch}
-              className="bg-transparent border-none outline-none text-sm text-white placeholder:text-slate-600 w-full"
-            />
-            {searchQuery && (
-              <button 
-                onClick={() => {
-                  const params = new URLSearchParams(searchParams);
-                  params.delete('q');
-                  setSearchParams(params, { replace: true });
-                }}
-                className="text-slate-500 hover:text-white transition-colors"
-              >
-                <X size={18} />
-              </button>
-            )}
-          </div>
-        </div>
-
         {/* Section Title */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">

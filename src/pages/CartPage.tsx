@@ -6,6 +6,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { formatCurrency } from '../lib/utils';
+import { PAYMENT_METHODS } from '../constants/paymentMethods';
 import { toast } from 'sonner';
 
 export const CartPage: React.FC = () => {
@@ -250,12 +251,7 @@ export const CartPage: React.FC = () => {
                 <section className="glass-card p-8 bg-white/[0.02]">
                   <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/40 italic mb-6">{t('topup.payment_method')}</h3>
                   <div className="flex flex-col gap-3">
-                    {[
-                      { id: 'qris', name: 'QRIS', icon: <QrCode size={18} /> },
-                      { id: 'gopay', name: 'GoPay', icon: <Wallet size={18} /> },
-                      { id: 'ovo', name: 'OVO', icon: <Wallet size={18} /> },
-                      { id: 'va', name: 'Virtual Account', icon: <Landmark size={18} /> },
-                    ].map((pm) => (
+                    {PAYMENT_METHODS.map((pm) => (
                       <button 
                         key={pm.id}
                         onClick={() => setSelectedPayment(pm.id)}

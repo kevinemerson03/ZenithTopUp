@@ -55,3 +55,10 @@ export interface Promo {
   discount: string;
   expiryDate: string;
 }
+
+export interface PaymentMethod {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  type: string;
+}
