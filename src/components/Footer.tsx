@@ -25,7 +25,7 @@ export const Footer: React.FC = () => {
           <div className="lg:col-span-4">
             <Link to="/" className="flex items-center mb-8 group">
               <img 
-                src="https://i.ibb.co.com/MDrq2YDY/logo.png" 
+                src="https://i.ibb.co.com/gZzdD7B3/d057742f-0196-4e90-b5ce-dcd59f053995.png" 
                 alt="ZenithTopUp" 
                 className="h-16 w-auto object-contain group-hover:scale-105 transition-transform duration-500"
                 referrerPolicy="no-referrer"
