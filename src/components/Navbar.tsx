@@ -48,7 +48,7 @@ export const Navbar: React.FC = () => {
     }));
 
   useEffect(() => {
-    if (isNotificationsOpen || isProfileOpen || isMenuOpen) {
+    if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -56,7 +56,7 @@ export const Navbar: React.FC = () => {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isNotificationsOpen, isProfileOpen, isMenuOpen]);
+  }, [isMenuOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
