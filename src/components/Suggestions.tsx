@@ -225,9 +225,9 @@ const CommentItem: React.FC<{
             <AnimatePresence>
               {showReplies && (
                 <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
+                  exit={{ opacity: 0, y: -10 }}
                   className="space-y-6 border-l border-white/5 pl-4 ml-2"
                 >
                   {replies.map((reply) => (

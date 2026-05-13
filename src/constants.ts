@@ -156,3 +156,31 @@ export const SUBSCRIPTIONS: Product[] = [
     ]
   }
 ];
+
+export const BANNER_ITEMS = [
+  {
+    id: 1,
+    image: "https://i.ibb.co.com/B55wnnTB/6.png",
+    titleKey: 'hero.title',
+    subtitleKey: 'hero.subtitle',
+    tagKey: 'hero.featured',
+    accent: "brand"
+  },
+  {
+    id: 2,
+    image: "https://i.ibb.co.com/nMp7rZ12/1.png",
+    titleKey: 'hero.games_banner_title',
+    subtitleKey: 'hero.games_banner_subtitle',
+    tagKey: 'hero.trending',
+    accent: "brand"
+  },
+  {
+    id: 3,
+    image: "https://i.ibb.co.com/KzmL3MP9/10.png",
+    titleKey: 'hero.streaming_banner_title',
+    subtitleKey: 'hero.streaming_banner_subtitle',
+    tagKey: 'hero.entertainment',
+    accent: "brand"
+  }
+];
+

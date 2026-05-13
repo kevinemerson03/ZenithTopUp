@@ -47,6 +47,33 @@ export const Navbar: React.FC = () => {
       type: 'success' as const
     }));
 
+  const closeAllDropdowns = () => {
+    setIsNotificationsOpen(false);
+    setIsProfileOpen(false);
+  };
+
+  useEffect(() => {
+    closeAllDropdowns();
+    setIsMenuOpen(false);
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.dropdown-container')) {
+        closeAllDropdowns();
+      }
+    };
+
+    if (isNotificationsOpen || isProfileOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isNotificationsOpen, isProfileOpen]);
+
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -122,15 +149,15 @@ export const Navbar: React.FC = () => {
           </Link>
           
           <div className="hidden lg:flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
-            <Link to="/?type=games" className="hover:text-white transition-all hover:tracking-[0.3em]">{t('home.games')}</Link>
-            <Link to="/?type=subscriptions" className="hover:text-white transition-all hover:tracking-[0.3em]">{t('home.subscriptions')}</Link>
-            <Link to="/support" className="hover:text-white transition-all hover:tracking-[0.3em]">{t('nav.support')}</Link>
+            <Link to="/?type=games" onClick={closeAllDropdowns} className="hover:text-white transition-all hover:tracking-[0.3em]">{t('home.games')}</Link>
+            <Link to="/?type=subscriptions" onClick={closeAllDropdowns} className="hover:text-white transition-all hover:tracking-[0.3em]">{t('home.subscriptions')}</Link>
+            <Link to="/support" onClick={closeAllDropdowns} className="hover:text-white transition-all hover:tracking-[0.3em]">{t('nav.support')}</Link>
           </div>
         </div>
 
         <div className="flex items-center gap-4 lg:gap-8">
           <div className="flex items-center gap-2 lg:gap-4">
-            <div className="relative">
+            <div className="relative dropdown-container">
               <button 
                 onClick={() => {
                   setIsNotificationsOpen(!isNotificationsOpen);
@@ -194,7 +221,10 @@ export const Navbar: React.FC = () => {
               </AnimatePresence>
             </div>
             <button 
-              onClick={() => navigate('/cart')}
+              onClick={() => {
+                closeAllDropdowns();
+                navigate('/cart');
+              }}
               className={`w-11 h-11 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center transition-all relative ${
                 location.pathname === '/cart' ? 'text-brand border-brand/50 bg-brand/10' : 'text-slate-400 hover:text-white hover:bg-white/[0.08]'
               }`}
@@ -217,9 +247,12 @@ export const Navbar: React.FC = () => {
           {loading ? (
             <div className="w-10 h-10 rounded-xl bg-white/5 animate-pulse" />
           ) : user ? (
-            <div className="relative">
+            <div className="relative dropdown-container">
               <button 
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                onClick={() => {
+                  setIsProfileOpen(!isProfileOpen);
+                  setIsNotificationsOpen(false);
+                }}
                 className="flex items-center gap-4 bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 rounded-2xl p-1.5 pr-5 transition-all group"
               >
                 <div className="w-10 h-10 rounded-xl bg-brand flex items-center justify-center text-white font-black italic shadow-lg shadow-brand/20 group-hover:scale-105 transition-transform uppercase">

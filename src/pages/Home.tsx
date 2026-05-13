@@ -1,7 +1,7 @@
-import React from 'react';
-import { motion } from 'motion/react';
-import { Zap, ShieldCheck, Headphones, TrendingUp, Search, X } from 'lucide-react';
-import { GAMES, SUBSCRIPTIONS } from '../constants';
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Zap, ShieldCheck, Headphones, TrendingUp, Search, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { GAMES, SUBSCRIPTIONS, BANNER_ITEMS } from '../constants';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { toast } from 'sonner';
@@ -12,6 +12,46 @@ export const Home: React.FC = () => {
   const { t } = useLanguage();
   const typeFilter = searchParams.get('type');
   const searchQuery = searchParams.get('q') || '';
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [direction, setDirection] = useState(0);
+
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0
+    })
+  };
+
+  const nextSlide = useCallback(() => {
+    setDirection(1);
+    setCurrentSlide((prev) => (prev + 1) % BANNER_ITEMS.length);
+  }, [BANNER_ITEMS.length]);
+
+  const prevSlide = () => {
+    setDirection(-1);
+    setCurrentSlide((prev) => (prev - 1 + BANNER_ITEMS.length) % BANNER_ITEMS.length);
+  };
+
+  const paginate = (newIndex: number) => {
+    setDirection(newIndex > currentSlide ? 1 : -1);
+    setCurrentSlide(newIndex);
+  };
+
+  useEffect(() => {
+    const timer = setInterval(nextSlide, 5000);
+    return () => clearInterval(timer);
+  }, [nextSlide]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -42,48 +82,95 @@ export const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-bg-main text-slate-200">
-      {/* Hero Slider */}
-      <section className="relative h-[400px] md:h-[500px] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-bg-main via-bg-main/20 to-transparent z-10" />
-        <img 
-          src="https://picsum.photos/seed/gaming-banner/1920/1080" 
-          alt="Featured" 
-          className="w-full h-full object-cover"
-          referrerPolicy="no-referrer"
-        />
-        <div className="absolute inset-0 z-20 flex items-center pt-24 md:pt-0">
-          <div className="max-w-7xl mx-auto px-4 w-full">
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="max-w-2xl"
-            >
-              <div className="inline-flex items-center gap-2 bg-brand/10 border border-brand/20 text-brand px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6">
-                <TrendingUp size={14} />
-                <span>{t('hero.featured')}</span>
-              </div>
-              <h1 className="text-5xl md:text-7xl font-black tracking-tight text-white mb-6 leading-[0.9]">
-                {t('hero.title').split(' ').slice(0, -1).join(' ')}<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand to-brand-secondary">{t('hero.title').split(' ').slice(-1)}</span>
-              </h1>
-              <p className="text-slate-400 text-lg mb-8 leading-relaxed max-w-lg">
-                {t('hero.subtitle')}
-              </p>
-              <div className="flex items-center gap-4">
-                <button 
-                  onClick={() => {
-                    const params = new URLSearchParams(searchParams);
-                    params.delete('type');
-                    setSearchParams(params);
-                  }}
-                  className="bg-gradient-to-r from-brand to-brand-secondary hover:opacity-90 text-white px-8 py-4 rounded-2xl font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-brand/20 active:scale-95 inline-block"
+      {/* Hero Carousel */}
+      <section className="relative h-[500px] md:h-[650px] overflow-hidden">
+        <AnimatePresence initial={false} custom={direction} mode="popLayout">
+          <motion.div
+            key={currentSlide}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: "spring", stiffness: 300, damping: 30 },
+              opacity: { duration: 0.2 }
+            }}
+            className="absolute inset-0"
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-bg-main via-bg-main/40 to-transparent z-10" />
+            <div className="absolute inset-0 bg-black/40 z-[5]" />
+            <img 
+              src={BANNER_ITEMS[currentSlide].image} 
+              alt="Featured" 
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
+            <div className="absolute inset-0 z-20 flex items-center">
+              <div className="max-w-7xl mx-auto px-6 w-full">
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                  className="max-w-3xl"
                 >
-                  {t('home.all_products')}
-                </button>
+                  <div className={`inline-flex items-center gap-2 bg-brand/10 border border-brand/20 text-brand px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-8`}>
+                    <TrendingUp size={14} />
+                    <span>{t(BANNER_ITEMS[currentSlide].tagKey)}</span>
+                  </div>
+                  <h1 className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter text-white mb-8 leading-[1.1] italic uppercase px-4 pb-4 overflow-visible">
+                    {t(BANNER_ITEMS[currentSlide].titleKey).split(' ').slice(0, -1).join(' ')}<br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand to-brand-secondary inline-block pr-8">
+                      {t(BANNER_ITEMS[currentSlide].titleKey).split(' ').slice(-1)}
+                    </span>
+                  </h1>
+                  <p className="text-slate-300 text-base md:text-lg mb-10 leading-relaxed max-w-xl font-medium">
+                    {t(BANNER_ITEMS[currentSlide].subtitleKey)}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <button 
+                      onClick={() => {
+                        const params = new URLSearchParams(searchParams);
+                        params.delete('type');
+                        setSearchParams(params);
+                      }}
+                      className="bg-brand hover:opacity-90 text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-2xl shadow-brand/40 active:scale-95 inline-block italic"
+                    >
+                      {t('home.all_products')}
+                    </button>
+                  </div>
+                </motion.div>
               </div>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Carousel Controls */}
+        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3">
+          {BANNER_ITEMS.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => paginate(idx)}
+              className={`h-1.5 transition-all duration-300 rounded-full ${
+                currentSlide === idx ? 'w-12 bg-brand' : 'w-2 bg-white/20 hover:bg-white/40'
+              }`}
+            />
+          ))}
         </div>
+
+        {/* Navigation Arrows */}
+        <button 
+          onClick={prevSlide}
+          className="absolute left-8 top-1/2 -translate-y-1/2 z-30 w-14 h-14 rounded-2xl bg-black/20 hover:bg-black/40 backdrop-blur-xl border border-white/5 flex items-center justify-center text-white/40 hover:text-white transition-all hidden xl:flex"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <button 
+          onClick={nextSlide}
+          className="absolute right-8 top-1/2 -translate-y-1/2 z-30 w-14 h-14 rounded-2xl bg-black/20 hover:bg-black/40 backdrop-blur-xl border border-white/5 flex items-center justify-center text-white/40 hover:text-white transition-all hidden xl:flex"
+        >
+          <ChevronRight size={24} />
+        </button>
       </section>
 
       <div className="max-w-7xl mx-auto px-4 -mt-12 relative z-30 pb-24">
