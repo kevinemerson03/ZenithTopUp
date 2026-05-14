@@ -127,18 +127,7 @@ export const Home: React.FC = () => {
                   <p className="text-slate-300 text-base md:text-lg mb-10 leading-relaxed max-w-xl font-medium">
                     {t(BANNER_ITEMS[currentSlide].subtitleKey)}
                   </p>
-                  <div className="flex flex-wrap items-center gap-4">
-                    <button 
-                      onClick={() => {
-                        const params = new URLSearchParams(searchParams);
-                        params.delete('type');
-                        setSearchParams(params);
-                      }}
-                      className="bg-brand hover:opacity-90 text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-2xl shadow-brand/40 active:scale-95 inline-block italic"
-                    >
-                      {t('home.all_products')}
-                    </button>
-                  </div>
+
                 </motion.div>
               </div>
             </div>
