@@ -40,8 +40,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLoading(true); // Ensure loading is true while we fetch profile
 
         // Subscribe to admin status
+        const ADMIN_EMAILS = ['kevin.emerson@smathibpk.penabur.sch.id', 'admin@gmail.com'];
+        
         adminUnsub = onSnapshot(doc(db, 'admins', firebaseUser.uid), (docSnapshot) => {
-          setIsAdmin(docSnapshot.exists());
+          const isHardcodedAdmin = firebaseUser.email ? ADMIN_EMAILS.includes(firebaseUser.email) : false;
+          setIsAdmin(docSnapshot.exists() || isHardcodedAdmin);
         });
 
         // Subscribe to user profile

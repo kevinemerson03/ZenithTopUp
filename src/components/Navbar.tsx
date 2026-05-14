@@ -12,7 +12,7 @@ import { signOut } from 'firebase/auth';
 export const Navbar: React.FC = () => {
   const { cart } = useCart();
   const { language, setLanguage, t } = useLanguage();
-  const { user, loading, history: txHistory } = useAuth();
+  const { user, loading, isAdmin, history: txHistory } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -151,7 +151,11 @@ export const Navbar: React.FC = () => {
           <div className="hidden lg:flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
             <Link to="/?type=games" onClick={closeAllDropdowns} className="hover:text-white transition-all hover:tracking-[0.3em]">{t('home.games')}</Link>
             <Link to="/?type=subscriptions" onClick={closeAllDropdowns} className="hover:text-white transition-all hover:tracking-[0.3em]">{t('home.subscriptions')}</Link>
-            <Link to="/support" onClick={closeAllDropdowns} className="hover:text-white transition-all hover:tracking-[0.3em]">{t('nav.support')}</Link>
+            {isAdmin ? (
+              <Link to="/support" onClick={closeAllDropdowns} className="text-brand hover:text-white transition-all hover:tracking-[0.3em] font-black italic">{t('nav.admin')}</Link>
+            ) : (
+              <Link to="/support" onClick={closeAllDropdowns} className="hover:text-white transition-all hover:tracking-[0.3em]">{t('nav.support')}</Link>
+            )}
           </div>
         </div>
 
@@ -368,7 +372,11 @@ export const Navbar: React.FC = () => {
               {user && (
                 <Link to="/profile" onClick={() => setIsMenuOpen(false)} className="text-3xl font-black italic uppercase tracking-tighter text-white/40 hover:text-emerald-500 transition-all">My Profile</Link>
               )}
-              <Link to="/support" onClick={() => setIsMenuOpen(false)} className="text-3xl font-black italic uppercase tracking-tighter text-white/40 hover:text-brand transition-all">Support</Link>
+              {isAdmin ? (
+                <Link to="/support" onClick={() => setIsMenuOpen(false)} className="text-3xl font-black italic uppercase tracking-tighter text-brand hover:text-brand-light transition-all">{t('nav.admin')}</Link>
+              ) : (
+                <Link to="/support" onClick={() => setIsMenuOpen(false)} className="text-3xl font-black italic uppercase tracking-tighter text-white/40 hover:text-brand transition-all">{t('nav.support')}</Link>
+              )}
               <Link to="/about" onClick={() => setIsMenuOpen(false)} className="text-3xl font-black italic uppercase tracking-tighter text-white/40 hover:text-brand transition-all">About</Link>
             </div>
 

@@ -95,8 +95,8 @@ export const CartPage: React.FC = () => {
               <ChevronLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
               {t('cart.back')}
             </button>
-            <h1 className="text-5xl md:text-7xl font-black italic uppercase tracking-tighter leading-[0.85]">
-              {t('cart.velocity_cart').split(' ').slice(0, -1).join(' ')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand to-brand-secondary">{t('cart.velocity_cart').split(' ').slice(-1)}</span>
+            <h1 className="text-5xl md:text-7xl font-black italic uppercase tracking-tighter leading-[0.85] pr-8 pb-2">
+              {t('cart.velocity_cart').split(' ').slice(0, -1).join(' ')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand to-brand-secondary pr-8">{t('cart.velocity_cart').split(' ').slice(-1)}</span>
             </h1>
           </div>
           <div className="flex items-center gap-4 bg-white/[0.02] border border-white/10 rounded-2xl px-6 py-4">
@@ -120,7 +120,7 @@ export const CartPage: React.FC = () => {
               <ShoppingCart size={64} />
             </div>
             <div>
-              <h2 className="text-3xl font-black italic uppercase tracking-tighter mb-4">{t('cart.empty_title')}</h2>
+              <h2 className="text-3xl font-black italic uppercase tracking-tighter mb-4 pr-6">{t('cart.empty_title')}</h2>
               <p className="text-slate-500 max-w-md mx-auto leading-relaxed">
                 {t('cart.empty_desc')}
               </p>
@@ -195,7 +195,7 @@ export const CartPage: React.FC = () => {
                     
                     <div className="flex-grow text-center sm:text-left">
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                        <h4 className="text-2xl font-black italic uppercase tracking-tighter text-white group-hover:text-brand transition-colors">
+                        <h4 className="text-2xl font-black italic uppercase tracking-tighter text-white group-hover:text-brand transition-colors pr-6">
                           {item.productName}
                         </h4>
                         <span className="hidden sm:block text-white/10">/</span>
@@ -340,7 +340,7 @@ export const CartPage: React.FC = () => {
               <div className="w-24 h-24 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center text-brand mx-auto mb-8">
                 <CheckCircle2 size={48} />
               </div>
-              <h3 className="text-4xl font-black italic uppercase tracking-tighter mb-4">{t('cart.success_title')}</h3>
+              <h3 className="text-4xl font-black italic uppercase tracking-tighter mb-4 pr-6">{t('cart.success_title')}</h3>
               <p className="text-white/40 text-lg mb-10 leading-relaxed font-medium">
                 {t('cart.success_desc')}
               </p>

@@ -13,6 +13,12 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { Profile } from './pages/Profile';
 import { SupportPage } from './pages/SupportPage';
+import { LegalPage } from './pages/LegalPage';
+import { PartnersPage } from './pages/PartnersPage';
+import { AboutPage } from './pages/AboutPage';
+import { CareersPage } from './pages/CareersPage';
+import { ContactPage } from './pages/ContactPage';
+import { FAQPage } from './pages/FAQPage';
 import { Toaster } from 'sonner';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
@@ -43,6 +49,12 @@ const AppContent: React.FC = () => {
               <Route path="/cart" element={<CartPage />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/support" element={<SupportPage />} />
+              <Route path="/legal" element={<LegalPage />} />
+              <Route path="/partners" element={<PartnersPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/careers" element={<CareersPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/faq" element={<FAQPage />} />
             </Routes>
           </motion.div>
         </AnimatePresence>

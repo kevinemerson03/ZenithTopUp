@@ -36,7 +36,8 @@ service cloud.firestore {
     function isAdmin() {
       return isSignedIn() && (
         exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
-        request.auth.token.email == 'kevin.emerson@smathibpk.penabur.sch.id'
+        request.auth.token.email == 'kevin.emerson@smathibpk.penabur.sch.id' ||
+        request.auth.token.email == 'admin@gmail.com'
       );
     }
 
@@ -93,20 +94,20 @@ service cloud.firestore {
     function isValidSupportMessage(data) {
       return data.keys().hasAll(['senderId', 'text', 'timestamp'])
         && data.text is string && data.text.size() <= 2000
-        && data.timestamp == request.time;
+        && data.timestamp == request.time
+        && (!('isAdmin' in data) || data.isAdmin is bool);
     }
 
     function isValidSupportSession(data) {
       return data.keys().hasAll(['userName', 'lastMessage', 'lastTimestamp'])
-        && data.userName is string
-        && data.lastMessage is string
-        && data.lastTimestamp == request.time;
+        && data.userName is string && data.userName.size() <= 100
+        && data.lastMessage is string && data.lastMessage.size() <= 2000;
     }
 
     match /support_chats/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId) && isValidSupportSession(incoming());
-      allow update: if (isOwner(userId) || isAdmin()) && isValidSupportSession(incoming());
+      allow create: if (isOwner(userId) || isAdmin()) && isValidId(userId) && isValidSupportSession(incoming()) && incoming().lastTimestamp == request.time;
+      allow update: if (isOwner(userId) || isAdmin()) && isValidSupportSession(incoming()) && incoming().lastTimestamp <= request.time;
 
       match /messages/{messageId} {
         allow read: if isOwner(userId) || isAdmin();

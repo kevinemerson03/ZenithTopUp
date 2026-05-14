@@ -18,7 +18,8 @@ import {
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 interface Message {
@@ -38,13 +39,18 @@ interface ChatSession {
 
 export const SupportPage: React.FC = () => {
   const { user, isAdmin } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedUserId = searchParams.get('uid');
+  
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
-  const [selectedUser, setSelectedUser] = useState<ChatSession | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const selectedUser = chatSessions.find(s => s.userId === selectedUserId) || null;
 
   // Scroll to bottom
   const scrollToBottom = (instant = false) => {
@@ -88,7 +94,7 @@ export const SupportPage: React.FC = () => {
   useEffect(() => {
     if (!user) return;
 
-    const chatUserId = isAdmin ? selectedUser?.userId : user.uid;
+    const chatUserId = isAdmin ? selectedUserId : user.uid;
     if (!chatUserId) {
       setMessages([]);
       return;
@@ -108,13 +114,13 @@ export const SupportPage: React.FC = () => {
     });
 
     return () => unsubscribe();
-  }, [user, isAdmin, selectedUser]);
+  }, [user, isAdmin, selectedUserId]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !inputText.trim()) return;
 
-    const chatUserId = isAdmin ? selectedUser?.userId : user.uid;
+    const chatUserId = isAdmin ? selectedUserId : user.uid;
     if (!chatUserId) return;
 
     setIsSubmitting(true);
@@ -130,15 +136,18 @@ export const SupportPage: React.FC = () => {
       });
 
       // 2. Update session info
-      await setDoc(doc(db, 'support_chats', chatUserId), {
-        userName: isAdmin ? selectedUser?.userName : (user.name || user.email),
+      const sessionRef = doc(db, 'support_chats', chatUserId);
+      await setDoc(sessionRef, {
+        userName: isAdmin ? (selectedUser?.userName || 'User') : (user.name || user.email || 'User'),
         lastMessage: inputText.trim(),
         lastTimestamp: serverTimestamp()
       }, { merge: true });
 
       setInputText('');
     } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, messagesPath);
+      console.error("Transmission error:", error);
+      toast.error('Secure transmission failed. Check permissions.');
+      handleFirestoreError(error, OperationType.WRITE, chatUserId);
     } finally {
       setIsSubmitting(false);
     }
@@ -146,15 +155,28 @@ export const SupportPage: React.FC = () => {
 
   const handleDeleteMessage = async (messageId: string) => {
     if (!user) return;
-    const chatUserId = isAdmin ? selectedUser?.userId : user.uid;
+    const chatUserId = isAdmin ? selectedUserId : user.uid;
     if (!chatUserId) return;
 
-    const messagePath = `support_chats/${chatUserId}/messages/${messageId}`;
     try {
       await deleteDoc(doc(db, 'support_chats', chatUserId, 'messages', messageId));
       toast.success('Transmission redacted');
+
+      // Update parent document's last message summary
+      // We use the messages currently in state (filtered to exclude the deleted one)
+      const remainingMessages = messages.filter(m => m.id !== messageId);
+      const lastMsg = remainingMessages.length > 0 
+        ? remainingMessages[remainingMessages.length - 1] 
+        : null;
+
+      const sessionRef = doc(db, 'support_chats', chatUserId);
+      await setDoc(sessionRef, {
+        lastMessage: lastMsg ? lastMsg.text : 'Transmission redacted',
+        lastTimestamp: lastMsg ? lastMsg.timestamp : serverTimestamp()
+      }, { merge: true });
+
     } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, messagePath);
+      handleFirestoreError(error, OperationType.DELETE, `support_chats/${chatUserId}/messages/${messageId}`);
     }
   };
 
@@ -162,6 +184,10 @@ export const SupportPage: React.FC = () => {
     if (!ts) return '';
     const date = ts.toDate ? ts.toDate() : new Date(ts);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const selectUser = (userId: string) => {
+    setSearchParams({ uid: userId });
   };
 
   if (!user) {
@@ -196,7 +222,7 @@ export const SupportPage: React.FC = () => {
             </button>
             <div>
               <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-black italic uppercase tracking-tighter text-white">Zenith Support</h1>
+                <h1 className="text-3xl font-black italic uppercase tracking-tighter text-white">{isAdmin ? t('nav.admin') : t('nav.support')}</h1>
                 <div className="px-2 py-1 bg-brand/10 border border-brand/20 rounded text-[10px] font-black text-brand uppercase tracking-widest italic flex items-center gap-1">
                   <ShieldCheck size={10} /> Secure Channel
                 </div>
@@ -236,9 +262,9 @@ export const SupportPage: React.FC = () => {
                   chatSessions.map((session) => (
                     <button
                       key={session.userId}
-                      onClick={() => setSelectedUser(session)}
+                      onClick={() => selectUser(session.userId)}
                       className={`w-full text-left p-4 rounded-2xl transition-all group ${
-                        selectedUser?.userId === session.userId 
+                        selectedUserId === session.userId 
                           ? 'bg-brand text-white' 
                           : 'bg-white/5 hover:bg-white/10 border border-transparent'
                       }`}

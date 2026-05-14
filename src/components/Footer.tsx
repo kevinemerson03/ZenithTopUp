@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
-import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin, ArrowRight, ShieldCheck, Zap, Globe, MessageSquare, LifeBuoy } from 'lucide-react';
+import { Twitter, Instagram, Mail, Phone, MapPin, ArrowRight, ShieldCheck, Zap, Globe, MessageSquare, LifeBuoy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Suggestions } from './Suggestions';
+import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const Footer: React.FC = () => {
+  const { isAdmin } = useAuth();
+  const { t } = useLanguage();
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
   const products = [
     { name: 'Mobile Legends', id: 'mlbb' },
     { name: 'Free Fire', id: 'ff' },
     { name: 'PUBG Mobile', id: 'pubgm' },
     { name: 'Genshin Impact', id: 'genshin' },
-    { name: 'Valorant', id: 'valorant' }
+    { name: 'Valorant', id: 'valorant' },
+    { name: 'Roblox', id: 'roblox' }
   ];
 
   return (
@@ -35,11 +40,14 @@ export const Footer: React.FC = () => {
               The ultimate premium digital top-up engine. Powering millions of transactions for gamers and digital enthusiasts worldwide with peak speed and absolute security.
             </p>
             <div className="flex items-center gap-4">
-              {[Facebook, Twitter, Instagram, Youtube].map((Icon, i) => (
-                <a key={i} href="#" className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-brand hover:border-brand transition-all">
-                  <Icon size={20} />
-                </a>
-              ))}
+              <a 
+                href="https://www.instagram.com/zenithtopup?igsh=MTFrc21idnJjb2RudQ==" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-brand hover:border-brand transition-all group"
+              >
+                <Instagram size={20} className="group-hover:scale-110 transition-transform" />
+              </a>
             </div>
           </div>
 
@@ -54,15 +62,18 @@ export const Footer: React.FC = () => {
                   </Link>
                 </li>
               ))}
+              <li><Link to="/" className="hover:text-brand transition-colors italic opacity-50 underline decoration-brand/30">etc...</Link></li>
             </ul>
           </div>
 
           <div className="lg:col-span-2">
             <h4 className="text-white font-black italic uppercase tracking-[0.2em] mb-8 text-xs">Company</h4>
             <ul className="flex flex-col gap-4 text-xs font-bold uppercase tracking-widest text-white/30">
-              {['About Us', 'Careers', 'Press Kit', 'Contact', 'Partners'].map((item) => (
-                <li key={item}><a href="#" className="hover:text-brand transition-colors">{item}</a></li>
-              ))}
+              <li><Link to="/about" className="hover:text-brand transition-colors">About Us</Link></li>
+              <li><Link to="/careers" className="hover:text-brand transition-colors">Careers</Link></li>
+              <li><Link to="/faq" className="hover:text-brand transition-colors">FAQ</Link></li>
+              <li><Link to="/contact" className="hover:text-brand transition-colors">Contact</Link></li>
+              <li><Link to="/partners" className="hover:text-brand transition-colors">{t('nav.partners')}</Link></li>
             </ul>
           </div>
 
@@ -96,9 +107,9 @@ export const Footer: React.FC = () => {
                   <LifeBuoy size={28} />
                 </div>
                 <div className="text-left flex-grow">
-                  <p className="text-xs font-black uppercase tracking-widest text-white mb-2">Zenith Support</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-white mb-2">{isAdmin ? t('nav.admin') : t('nav.support')}</p>
                   <p className="text-[10px] font-medium text-white/40 leading-relaxed max-w-[200px]">
-                    Need help? Chat privately with our secure support channel operatives.
+                    {isAdmin ? 'Access the admin console to prioritize and reply to secure transmissions.' : 'Need help? Chat privately with our secure support channel operatives.'}
                   </p>
                 </div>
                 <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/20 group-hover:text-brand transition-colors flex-shrink-0 self-center">
@@ -128,9 +139,9 @@ export const Footer: React.FC = () => {
               © 2026 ZENITH TOPUP ENGINE. All rights reserved.
             </p>
             <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-widest text-white/20">
-              <a href="#" className="hover:text-white transition-colors">Privacy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms</a>
-              <a href="#" className="hover:text-white transition-colors">Cookies</a>
+              <Link to="/legal?section=privacy" className="hover:text-white transition-colors">{t('legal.privacy')}</Link>
+              <Link to="/legal?section=terms" className="hover:text-white transition-colors">{t('legal.terms')}</Link>
+              <Link to="/legal?section=cookies" className="hover:text-white transition-colors">{t('legal.cookies')}</Link>
             </div>
           </div>
         </div>
