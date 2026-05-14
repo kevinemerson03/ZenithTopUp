@@ -131,7 +131,10 @@ export const Navbar: React.FC = () => {
       <nav className="fixed top-0 left-0 right-0 z-50 transition-[box-shadow] duration-300 ease-in-out bg-slate-950/98 backdrop-blur-md border-b border-white/10 shadow-xl shadow-black/20">
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between py-4 transition-all duration-300">
         <div className="flex items-center gap-16">
-          <Link to="/" className="flex items-center group" onClick={() => setIsMenuOpen(false)}>
+          <Link to="/" className="flex items-center group" onClick={() => {
+            setIsMenuOpen(false);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}>
             <img 
               src="https://i.ibb.co.com/gZzdD7B3/d057742f-0196-4e90-b5ce-dcd59f053995.png" 
               alt="ZenithTopUp" 
@@ -149,8 +152,14 @@ export const Navbar: React.FC = () => {
           </Link>
           
           <div className="hidden lg:flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
-            <Link to="/?type=games" onClick={closeAllDropdowns} className="hover:text-white transition-all hover:tracking-[0.3em]">{t('home.games')}</Link>
-            <Link to="/?type=subscriptions" onClick={closeAllDropdowns} className="hover:text-white transition-all hover:tracking-[0.3em]">{t('home.subscriptions')}</Link>
+            <Link to="/?type=games" onClick={() => {
+              closeAllDropdowns();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }} className="hover:text-white transition-all hover:tracking-[0.3em]">{t('home.games')}</Link>
+            <Link to="/?type=subscriptions" onClick={() => {
+              closeAllDropdowns();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }} className="hover:text-white transition-all hover:tracking-[0.3em]">{t('home.subscriptions')}</Link>
             {isAdmin ? (
               <Link to="/support" onClick={closeAllDropdowns} className="text-brand hover:text-white transition-all hover:tracking-[0.3em] font-black italic">{t('nav.admin')}</Link>
             ) : (
@@ -367,8 +376,14 @@ export const Navbar: React.FC = () => {
             </div>
 
             <div className="flex flex-col gap-8">
-              <Link to="/?type=games" onClick={() => setIsMenuOpen(false)} className="text-3xl font-black italic uppercase tracking-tighter text-white/40 hover:text-brand transition-all">{t('home.games')}</Link>
-              <Link to="/?type=subscriptions" onClick={() => setIsMenuOpen(false)} className="text-3xl font-black italic uppercase tracking-tighter text-white/40 hover:text-brand transition-all">{t('home.subscriptions')}</Link>
+              <Link to="/?type=games" onClick={() => {
+                setIsMenuOpen(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }} className="text-3xl font-black italic uppercase tracking-tighter text-white/40 hover:text-brand transition-all">{t('home.games')}</Link>
+              <Link to="/?type=subscriptions" onClick={() => {
+                setIsMenuOpen(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }} className="text-3xl font-black italic uppercase tracking-tighter text-white/40 hover:text-brand transition-all">{t('home.subscriptions')}</Link>
               {user && (
                 <Link to="/profile" onClick={() => setIsMenuOpen(false)} className="text-3xl font-black italic uppercase tracking-tighter text-white/40 hover:text-emerald-500 transition-all">My Profile</Link>
               )}

@@ -28,7 +28,7 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20">
           {/* Brand Column */}
           <div className="lg:col-span-4">
-            <Link to="/" className="flex items-center mb-8 group">
+            <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center mb-8 group">
               <img 
                 src="https://i.ibb.co.com/gZzdD7B3/d057742f-0196-4e90-b5ce-dcd59f053995.png" 
                 alt="ZenithTopUp" 

@@ -110,8 +110,8 @@ export const PartnersPage: React.FC = () => {
 
               <div className="grid sm:grid-cols-2 gap-4 mb-16">
                 {benefits.map((benefit, idx) => (
-                  <div key={idx} className="flex gap-4 p-6 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-brand/30 transition-all group">
-                    <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center text-brand flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <div key={idx} className="flex gap-4 p-6 rounded-2xl bg-white/[0.03] border border-white/5 transition-all">
+                    <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center text-brand flex-shrink-0 transition-transform">
                       <CheckCircle2 size={20} />
                     </div>
                     <p className="text-slate-300 font-medium leading-relaxed">{benefit}</p>

@@ -97,8 +97,8 @@ export const CareersPage: React.FC = () => {
             </h2>
             <div className="grid sm:grid-cols-2 gap-6">
               {reasons.map((r, i) => (
-                <div key={i} className="p-6 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-brand/30 transition-all group">
-                  <div className="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center text-brand mb-6 group-hover:scale-110 transition-transform">
+                <div key={i} className="p-6 rounded-2xl bg-white/[0.03] border border-white/5 transition-all">
+                  <div className="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center text-brand mb-6 transition-transform">
                     <r.icon size={24} />
                   </div>
                   <h3 className="text-xl font-black italic uppercase tracking-tight text-white mb-2">{r.title}</h3>

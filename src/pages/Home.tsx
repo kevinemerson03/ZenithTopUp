@@ -239,24 +239,24 @@ export const Home: React.FC = () => {
 
         {/* Benefits Section */}
         <div className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="glass-card p-8 flex flex-col items-center text-center gap-4 group hover:border-brand/30 transition-all">
-            <div className="w-16 h-16 rounded-2xl bg-brand/10 flex items-center justify-center text-brand border border-brand/20 group-hover:scale-110 transition-transform">
+          <div className="glass-card p-8 flex flex-col items-center text-center gap-4 border border-white/5">
+            <div className="w-16 h-16 rounded-2xl bg-brand/10 flex items-center justify-center text-brand border border-brand/20">
               <Zap size={32} />
             </div>
             <h4 className="text-lg font-bold text-white">{t('benefits.fast.title')}</h4>
             <p className="text-sm text-slate-500 leading-relaxed">{t('benefits.fast.desc')}</p>
           </div>
 
-          <div className="glass-card p-8 flex flex-col items-center text-center gap-4 group hover:border-blue-500/30 transition-all">
-            <div className="w-16 h-16 rounded-2xl bg-brand-secondary/10 flex items-center justify-center text-brand-secondary border border-brand-secondary/20 group-hover:scale-110 transition-transform">
+          <div className="glass-card p-8 flex flex-col items-center text-center gap-4 border border-white/5">
+            <div className="w-16 h-16 rounded-2xl bg-brand-secondary/10 flex items-center justify-center text-brand-secondary border border-brand-secondary/20">
               <ShieldCheck size={32} />
             </div>
             <h4 className="text-lg font-bold text-white">{t('benefits.secure.title')}</h4>
             <p className="text-sm text-slate-500 leading-relaxed">{t('benefits.secure.desc')}</p>
           </div>
 
-          <div className="glass-card p-8 flex flex-col items-center text-center gap-4 group hover:border-green-500/30 transition-all">
-            <div className="w-16 h-16 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 border border-green-500/20 group-hover:scale-110 transition-transform">
+          <div className="glass-card p-8 flex flex-col items-center text-center gap-4 border border-white/5">
+            <div className="w-16 h-16 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 border border-green-500/20">
               <Headphones size={32} />
             </div>
             <h4 className="text-lg font-bold text-white">{t('benefits.support.title')}</h4>
