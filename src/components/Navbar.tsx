@@ -36,16 +36,43 @@ export const Navbar: React.FC = () => {
     return then.toLocaleDateString();
   };
 
-  const notifications = txHistory
-    .filter(tx => tx.status === 'completed')
-    .slice(0, 5)
-    .map(tx => ({
-      id: tx.id,
-      title: 'Top Up Successful',
-      message: `Your ${tx.productName} (${tx.amount}) top-up was processed.`,
-      time: formatRelativeTime(tx.date),
-      type: 'success' as const
-    }));
+  const [readNotifIds, setReadNotifIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('zenith_read_notifications');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const notifications = React.useMemo(() => {
+    return txHistory
+      .filter(tx => tx.status === 'completed')
+      .slice(0, 5)
+      .map(tx => ({
+        id: tx.id,
+        title: 'Top Up Successful',
+        message: `Your ${tx.productName} (${tx.amount}) top-up was processed.`,
+        time: formatRelativeTime(tx.date),
+        type: 'success' as const
+      }));
+  }, [txHistory]);
+
+  const unreadNotificationsCount = notifications.filter(n => !readNotifIds.includes(n.id)).length;
+
+  useEffect(() => {
+    if (isNotificationsOpen && notifications.length > 0) {
+      const notifIds = notifications.map(n => n.id);
+      const hasNewUnread = notifIds.some(id => !readNotifIds.includes(id));
+      if (hasNewUnread) {
+        setReadNotifIds(prev => {
+          const uniqueIds = Array.from(new Set([...prev, ...notifIds]));
+          localStorage.setItem('zenith_read_notifications', JSON.stringify(uniqueIds));
+          return uniqueIds;
+        });
+      }
+    }
+  }, [isNotificationsOpen, notifications, readNotifIds]);
 
   const closeAllDropdowns = () => {
     setIsNotificationsOpen(false);
@@ -181,7 +208,7 @@ export const Navbar: React.FC = () => {
                 }`}
               >
                 <Bell size={20} />
-                {notifications.length > 0 && (
+                {unreadNotificationsCount > 0 && (
                   <div className="absolute top-3 right-3 w-2 h-2 bg-brand rounded-full border-2 border-slate-950" />
                 )}
               </button>
@@ -196,8 +223,8 @@ export const Navbar: React.FC = () => {
                   >
                     <div className="p-5 border-b border-white/5 bg-white/[0.02] flex items-center justify-between">
                       <p className="text-[10px] text-slate-500 uppercase tracking-[0.2em] font-black italic">{t('nav.notifications')}</p>
-                      {notifications.length > 0 && (
-                        <span className="text-[8px] font-black text-brand uppercase tracking-widest bg-brand/10 px-2 py-0.5 rounded">{notifications.length} {t('nav.new')}</span>
+                      {unreadNotificationsCount > 0 && (
+                        <span className="text-[8px] font-black text-brand uppercase tracking-widest bg-brand/10 px-2 py-0.5 rounded">{unreadNotificationsCount} {t('nav.new')}</span>
                       )}
                     </div>
                     <div className="p-2 max-h-[400px] overflow-y-auto">
@@ -329,26 +356,7 @@ export const Navbar: React.FC = () => {
       </div>
     </nav>
 
-    {/* Floating Cart Button (Always Visible) */}
-    <AnimatePresence>
-      {location.pathname !== '/cart' && cart.length > 0 && (
-        <motion.button
-          initial={{ scale: 0, y: 20 }}
-          animate={{ scale: 1, y: 0 }}
-          exit={{ scale: 0, y: 20 }}
-          onClick={() => navigate('/cart')}
-          className="fixed bottom-8 left-8 z-[100] w-16 h-16 rounded-full bg-brand text-white shadow-2xl shadow-brand/40 flex items-center justify-center group active:scale-90 transition-transform"
-        >
-          <div className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center text-[11px] font-black text-brand border-2 border-brand">
-            {cart.length}
-          </div>
-          <ShoppingCart size={28} className="group-hover:scale-110 transition-transform" />
-          
-          {/* Pulsing Ring */}
-          <div className="absolute inset-0 rounded-full bg-brand animate-ping opacity-20 -z-10" />
-        </motion.button>
-      )}
-    </AnimatePresence>
+
 
     {/* Mobile Menu */}
     <AnimatePresence>

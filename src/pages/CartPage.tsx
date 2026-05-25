@@ -170,24 +170,22 @@ export const CartPage: React.FC = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.1 }}
-                    className={`glass-card p-6 flex flex-col sm:flex-row items-center gap-8 group transition-all ${
+                    onClick={() => toggleItem(item.id)}
+                    className={`glass-card p-6 flex flex-col sm:flex-row items-center gap-8 group transition-all cursor-pointer ${
                       selectedItems.has(item.id) 
                         ? 'border-brand/40 bg-brand/5 shadow-[0_0_40px_-10px_rgba(37,99,235,0.1)]' 
                         : 'hover:border-white/20'
                     }`}
                   >
-                    <button 
-                      onClick={() => toggleItem(item.id)}
-                      className="flex-shrink-0"
-                    >
+                    <div className="flex-shrink-0">
                       <div className={`w-6 h-6 rounded-lg border flex items-center justify-center transition-all ${
                         selectedItems.has(item.id)
                           ? 'bg-brand border-brand text-white' 
-                          : 'border-white/10 text-transparent hover:border-white/20'
+                          : 'border-white/10 text-transparent group-hover:border-white/20'
                       }`}>
                         <CheckCircle2 size={14} strokeWidth={4} />
                       </div>
-                    </button>
+                    </div>
 
                     <div className="w-24 h-32 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10 shadow-2xl">
                       <img src={item.productImage} alt={item.productName} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
@@ -221,7 +219,10 @@ export const CartPage: React.FC = () => {
                     </div>
                     
                     <button 
-                      onClick={() => removeFromCart(item.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFromCart(item.id);
+                      }}
                       className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-slate-600 hover:text-red-500 hover:bg-red-500/10 transition-all border border-white/5"
                     >
                       <Trash2 size={20} />
