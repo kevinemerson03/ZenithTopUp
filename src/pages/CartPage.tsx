@@ -353,7 +353,10 @@ export const CartPage: React.FC = () => {
                   {t('topup.view_history')}
                 </button>
                 <button 
-                  onClick={() => setShowSuccess(false)}
+                  onClick={() => {
+                    setShowSuccess(false);
+                    navigate('/');
+                  }}
                   className="w-full bg-white/5 text-white py-5 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-white/10 transition-all"
                 >
                   {t('cart.back')}
